@@ -1,0 +1,15 @@
+{
+    "dev": {
+        "awscloudformation": {
+            "AuthRoleName": "amplify-beverlyhillsfrontend-dev-200207-authRole",
+            "UnauthRoleArn": "arn:aws:iam::784380094623:role/amplify-beverlyhillsfrontend-dev-200207-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::784380094623:role/amplify-beverlyhillsfrontend-dev-200207-authRole",
+            "Region": "us-east-1",
+            "DeploymentBucketName": "amplify-beverlyhillsfrontend-dev-200207-deployment",
+            "UnauthRoleName": "amplify-beverlyhillsfrontend-dev-200207-unauthRole",
+            "StackName": "amplify-beverlyhillsfrontend-dev-200207",
+            "StackId": "arn:aws:cloudformation:us-east-1:784380094623:stack/amplify-beverlyhillsfrontend-dev-200207/a11ef660-ce83-11ea-adb3-0a200f00c284",
+            "AmplifyAppId": "d1pm2ccmzye5fs"
+        }
+    }
+}
