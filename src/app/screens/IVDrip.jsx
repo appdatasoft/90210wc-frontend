@@ -7,7 +7,7 @@ export default class IVDrip extends React.Component {
   };
   componentDidMount() {
     axios
-      .get("https://3usta2en23.execute-api.us-east-1.amazonaws.com/dev/ivdrips")
+        .get("http://localhost:4040/ivdrips")
       .then((res) => this.setState({ data: res.data.data.data }))
       .catch((err) => console.log(err));
   }

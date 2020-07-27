@@ -7,7 +7,7 @@ export default class Teams extends React.Component {
   };
   componentDidMount() {
     axios
-      .get("https://3usta2en23.execute-api.us-east-1.amazonaws.com/dev/teams")
+        .get("http://localhost:4040/teams")
       .then((res) => this.setState({ data: res.data.data.data }))
       .catch((err) => console.log(err));
   }
