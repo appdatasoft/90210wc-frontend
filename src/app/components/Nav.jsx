@@ -29,7 +29,7 @@ export default class NavC extends Component {
   componentDidMount() {
     axios
       .get(
-        "https://3usta2en23.execute-api.us-east-1.amazonaws.com/dev/common/menu"
+        "http://localhost:4040/common/menu"
       )
       .then((res) => {
         this.setState({
@@ -127,8 +127,31 @@ export default class NavC extends Component {
                       </DropdownItem>
                     ))}
                 </DropdownMenu>
-              </UncontrolledDropdown>
+                </UncontrolledDropdown>
+                <UncontrolledDropdown nav inNavbar>
+                <DropdownToggle nav caret>
+                      Admin
+                </DropdownToggle>
+                <DropdownMenu>
+                    <DropdownItem key="0" tag={Link} to="/admin">
+                         Add
+                    </DropdownItem>
+                                <DropdownItem key="1" tag={Link} to="/admin/ivdrips">
+                         Edit IV Drips
+                    </DropdownItem>
+                                <DropdownItem key="2" tag={Link} to="/admin/therapies">
+                                    Edit Therapies
+                    </DropdownItem>
+                                <DropdownItem key="3" tag={Link} to="/admin/services">
+                                    Edit Services
+                    </DropdownItem>
+                                <DropdownItem key="4" tag={Link} to="/admin/team">
+                                    Edit Team
+                    </DropdownItem>
+                </DropdownMenu>
+                </UncontrolledDropdown>
             </Nav>
+
           </Collapse>
         </Navbar>
       </>
