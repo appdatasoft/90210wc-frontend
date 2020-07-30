@@ -5,7 +5,7 @@ import {
   InMemoryCache,
   gql,
 } from "@apollo/client";
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { HashRouter as Router, Route } from "react-router-dom";
 import LoadingBar from "react-top-loading-bar";
 
 import "./App.css";
@@ -15,6 +15,7 @@ import Ivdrip from "./app/screens/IVDrip";
 import Therapies from "./app/screens/Therapies";
 import Services from "./app/screens/Services";
 import Team from "./app/screens/Team";
+import Email from "./app/screens/Email";
 
 const client = new ApolloClient({
   uri: "https://vj0qrrbnk5.execute-api.us-east-1.amazonaws.com/dev/graphql",
@@ -119,6 +120,7 @@ function App() {
                   path="/team/:slug"
                   render={(props) => <Team data={menuData.teams} {...props} />}
                 />
+                <Route exact path="/email" component={Email} />
               </div>
             </>
           )}
