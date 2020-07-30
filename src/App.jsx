@@ -16,6 +16,7 @@ import Therapies from "./app/screens/Therapies";
 import Services from "./app/screens/Services";
 import Team from "./app/screens/Team";
 import Email from "./app/screens/Email";
+import Data from "./app/screens/Data";
 
 const client = new ApolloClient({
   uri: "https://vj0qrrbnk5.execute-api.us-east-1.amazonaws.com/dev/graphql",
@@ -93,7 +94,6 @@ function App() {
             <>
               <NavC data={menuData} />
               <div className="container">
-                <Route exact path="/" component={Home} />
                 <Route
                   exact
                   path="/ivdrip/:slug"
@@ -120,7 +120,9 @@ function App() {
                   path="/team/:slug"
                   render={(props) => <Team data={menuData.teams} {...props} />}
                 />
-                <Route exact path="/email" component={Email} />
+                <Route path="/email" component={Email} />
+                <Route path="/data" component={Data} />
+                <Route exact path="/" component={Home} />
               </div>
             </>
           )}
