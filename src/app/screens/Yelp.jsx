@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { Button, Form, FormGroup, Input } from "reactstrap";
+import { Button, Form, FormGroup, Input, Alert } from "reactstrap";
 import axios from "axios";
 
-const Data = () => {
+const Yelp = () => {
   const [data, setData] = useState();
 
   const [payload, setPayload] = useState({
@@ -21,16 +21,17 @@ const Data = () => {
           keyword: "",
           city: "",
         });
-        setData(res.data);
+        setData(JSON.stringify(res.data.body));
       })
       .catch((err) => {
-        alert("Internal Server Error!");
+        alert("Something went wrong please try again!");
         setData(JSON.stringify(err));
       });
   };
 
   return (
-    <div className="mt-5 px-5">
+    <div className="mt-3 px-5">
+      <h1 className="text-center">Yelp</h1>
       <Form onSubmit={handleSubmit}>
         <FormGroup>
           <Input
@@ -60,11 +61,13 @@ const Data = () => {
           Get Data
         </Button>
         <FormGroup>
-          <div>{data}</div>
+          <div className="mt-4">
+            {data && <Alert color="primary">{data}</Alert>}
+          </div>
         </FormGroup>
       </Form>
     </div>
   );
 };
 
-export default Data;
+export default Yelp;

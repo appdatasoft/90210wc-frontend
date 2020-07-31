@@ -5,7 +5,7 @@ import {
   InMemoryCache,
   gql,
 } from "@apollo/client";
-import { HashRouter as Router, Route } from "react-router-dom";
+import { BrowserRouter as Router, Route } from "react-router-dom";
 import LoadingBar from "react-top-loading-bar";
 
 import "./App.css";
@@ -16,7 +16,9 @@ import Therapies from "./app/screens/Therapies";
 import Services from "./app/screens/Services";
 import Team from "./app/screens/Team";
 import Email from "./app/screens/Email";
-import Data from "./app/screens/Data";
+import Yelp from "./app/screens/Yelp";
+import LinkedIn from "./app/screens/LinkedIn";
+import VerticalNav from "./app/components/VerticalNav";
 
 const client = new ApolloClient({
   uri: "https://vj0qrrbnk5.execute-api.us-east-1.amazonaws.com/dev/graphql",
@@ -120,10 +122,27 @@ function App() {
                   path="/team/:slug"
                   render={(props) => <Team data={menuData.teams} {...props} />}
                 />
-                <Route path="/email" component={Email} />
-                <Route path="/data" component={Data} />
+                <Route exact path="/email" component={Email} />
                 <Route exact path="/" component={Home} />
               </div>
+              <Route
+                exact
+                path="/data/yelp"
+                render={(props) => (
+                  <VerticalNav {...props}>
+                    <Yelp />
+                  </VerticalNav>
+                )}
+              />
+              <Route
+                exact
+                path="/data/linkedin"
+                render={(props) => (
+                  <VerticalNav {...props}>
+                    <LinkedIn />
+                  </VerticalNav>
+                )}
+              />
             </>
           )}
         </div>
