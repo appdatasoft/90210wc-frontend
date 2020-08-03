@@ -29,3 +29,22 @@
         display: block !important;
     }
 }
+
+
+/* Vertical NAv */
+
+.vertical-link {
+    color: rgb(104, 102, 102);
+}
+
+.vertical-link:hover {
+    color: rgb(104, 102, 102);
+}
+
+.activenav {
+    color: black;
+}
+
+.activenav:hover {
+    color: black;
+}
