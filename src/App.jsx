@@ -19,6 +19,7 @@ import Email from "./app/screens/Email";
 import Yelp from "./app/screens/Yelp";
 import LinkedIn from "./app/screens/LinkedIn";
 import VerticalNav from "./app/components/VerticalNav";
+import Appointment from "./app/screens/Appointment";
 
 const client = new ApolloClient({
   uri: "https://vj0qrrbnk5.execute-api.us-east-1.amazonaws.com/dev/graphql",
@@ -76,8 +77,8 @@ function App() {
         setShowloader(false);
       })
       .catch((err) => {
-        ref.current.complete();
         setShowloader(false);
+        // ref.current.complete();
       });
   };
   const ref = useRef(null);
@@ -143,6 +144,7 @@ function App() {
                   </VerticalNav>
                 )}
               />
+              <Route exact path="/appointment" component={Appointment} />
             </>
           )}
         </div>
