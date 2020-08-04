@@ -1,14 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
-import {
-  ApolloProvider,
-  ApolloClient,
-  InMemoryCache,
-  gql,
-} from "@apollo/client";
+import { ApolloProvider } from "@apollo/client";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import LoadingBar from "react-top-loading-bar";
-
-import "./App.css";
 import NavC from "./app/components/Nav";
 import Home from "./app/screens/Home";
 import Ivdrip from "./app/screens/IVDrip";
@@ -20,36 +13,10 @@ import Yelp from "./app/screens/Yelp";
 import LinkedIn from "./app/screens/LinkedIn";
 import VerticalNav from "./app/components/VerticalNav";
 import Appointment from "./app/screens/Appointment";
+import { client } from "./app/graphql/";
+import { getMenuQuery } from "./app/graphql/query";
 
-const client = new ApolloClient({
-  uri: "https://vj0qrrbnk5.execute-api.us-east-1.amazonaws.com/dev/graphql",
-  cache: new InMemoryCache(),
-});
-
-const GET_MENU = gql`
-  query GetMenuData {
-    getIvdrips {
-      title
-      slug
-      description
-    }
-    getServices {
-      title
-      slug
-      description
-    }
-    getTeams {
-      title
-      slug
-      description
-    }
-    getTherapies {
-      title
-      slug
-      description
-    }
-  }
-`;
+import "./App.css";
 
 function App() {
   const [showLoader, setShowloader] = useState(true);
@@ -64,7 +31,7 @@ function App() {
     ref.current.continuousStart();
     client
       .query({
-        query: GET_MENU,
+        query: getMenuQuery,
       })
       .then(({ data }) => {
         setMenuData({
@@ -78,7 +45,7 @@ function App() {
       })
       .catch((err) => {
         setShowloader(false);
-        // ref.current.complete();
+        ref.current.complete();
       });
   };
   const ref = useRef(null);
