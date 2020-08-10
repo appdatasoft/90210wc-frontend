@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Button, Form, FormGroup, Label, Input } from "reactstrap";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 
 import { Auth } from "aws-amplify";
 
@@ -14,6 +14,7 @@ export default class Signup extends Component {
       verify: false,
       code: "",
       disabled: false,
+      auth: false,
     };
   }
 
@@ -36,9 +37,9 @@ export default class Signup extends Component {
           disabled: false,
         });
       })
-      .catch(() => {
+      .catch((err) => {
         this.setState({ ...this.state, disabled: false });
-        alert("Something went wrong please try again");
+        alert(err.message);
       });
   };
 
@@ -50,12 +51,13 @@ export default class Signup extends Component {
           code: "",
           email: "",
           disabled: false,
+          auth: true,
         });
-        this.props.history.push("/signin");
+        // this.props.history.push("/signin");
       })
-      .catch(() => {
+      .catch((err) => {
         this.setState({ ...this.state, disabled: false });
-        alert("Something went wrong please try again");
+        alert(err.message);
       });
   };
 
@@ -79,8 +81,10 @@ export default class Signup extends Component {
   };
 
   render() {
-    const { email, password, name, code, verify } = this.state;
-    if (verify) {
+    const { email, password, name, code, verify, auth, disabled } = this.state;
+    if (auth) {
+      return <Redirect to="/signin" />;
+    } else if (verify) {
       return (
         <div className="mt-4">
           <h1 className="text-center">Account Verification</h1>
@@ -99,7 +103,7 @@ export default class Signup extends Component {
               />
             </FormGroup>
             <div class="d-flex justify-content-between">
-              <Button type="submit" color="primary">
+              <Button type="submit" color="primary" disabled={disabled}>
                 Verify
               </Button>
             </div>
@@ -148,7 +152,7 @@ export default class Signup extends Component {
               />
             </FormGroup>
             <div class="d-flex justify-content-between">
-              <Button type="submit" color="primary">
+              <Button type="submit" color="primary" disabled={disabled}>
                 Sign Up
               </Button>
               <Link to="/signin">
