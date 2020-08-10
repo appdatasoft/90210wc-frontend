@@ -1,10 +1,14 @@
 import React, { useState } from "react";
 import { NavLink as Link } from "react-router-dom";
+import { connect } from "react-redux";
+import { Auth } from "aws-amplify";
 import {
   Collapse,
+  Button,
   Navbar,
   NavbarToggler,
   NavbarBrand,
+  NavbarText,
   Nav,
   NavItem,
   NavLink,
@@ -13,11 +17,19 @@ import {
   DropdownMenu,
   DropdownItem,
 } from "reactstrap";
+import { unsetAuthUser } from "../redux/actions/auth";
 
-const NavC = ({ data }) => {
-  const { ivdrips, therapies, teams, services } = data;
+const NavC = (props) => {
+  const { ivdrips, therapies, teams, services } = props.data;
   const [isOpen, setIsOpen] = useState(false);
   const toggle = () => setIsOpen(!isOpen);
+
+  const handleLogout = () => {
+    Auth.signOut().then(() => {
+      localStorage.removeItem("90210wc-data");
+      props.dispatch(unsetAuthUser());
+    });
+  };
 
   return (
     <>
@@ -94,10 +106,30 @@ const NavC = ({ data }) => {
               </DropdownMenu>
             </UncontrolledDropdown>
           </Nav>
+          <NavbarText className="py-0">
+            {props.auth.authenticated ? (
+              <Button onClick={handleLogout} color="light" outline>
+                Logout
+              </Button>
+            ) : (
+              <Link to="/signup">
+                <Button color="light" outline>
+                  SignUp/SignIn
+                </Button>
+              </Link>
+            )}
+          </NavbarText>
         </Collapse>
       </Navbar>
     </>
   );
 };
 
-export default NavC;
+// export default NavC;
+const mapStateToProps = ({ auth }) => {
+  return {
+    auth,
+  };
+};
+
+export default connect(mapStateToProps)(NavC);

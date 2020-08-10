@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import { ApolloProvider } from "@apollo/client";
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
+import { connect } from "react-redux";
 import LoadingBar from "react-top-loading-bar";
 import NavC from "./app/components/Nav";
 import Home from "./app/screens/Home";
@@ -15,11 +16,22 @@ import VerticalNav from "./app/components/VerticalNav";
 import Appointment from "./app/screens/Appointment";
 import { client } from "./app/graphql/";
 import { getMenuQuery } from "./app/graphql/query";
+import { setAuthUser } from "./app/redux/actions/auth";
+
+import Amplify from "aws-amplify";
+import aws_exports from "./aws-exports";
+import Signup from "./app/screens/auth/Signup";
+import Signin from "./app/screens/auth/Signin";
 
 import "./App.css";
+import ForgetPassword from "./app/screens/auth/ForgetPassword";
 
-function App() {
+Amplify.configure(aws_exports);
+
+function App(props) {
   const [showLoader, setShowloader] = useState(true);
+  const ref = useRef(null);
+
   const [menuData, setMenuData] = useState({
     ivdrips: [],
     therapies: [],
@@ -29,6 +41,12 @@ function App() {
 
   const getMenu = () => {
     ref.current.continuousStart();
+
+    var data = JSON.parse(localStorage.getItem("90210wc-data"));
+    if (data) {
+      props.dispatch(setAuthUser(data));
+    }
+
     client
       .query({
         query: getMenuQuery,
@@ -45,10 +63,9 @@ function App() {
       })
       .catch((err) => {
         setShowloader(false);
-        ref.current.complete();
+        // ref.current.complete();
       });
   };
-  const ref = useRef(null);
 
   useEffect(() => {
     getMenu();
@@ -91,6 +108,20 @@ function App() {
                   render={(props) => <Team data={menuData.teams} {...props} />}
                 />
                 <Route exact path="/email" component={Email} />
+                {/* auth */}
+                <Route exact path="/signup">
+                  {props.authenticated ? <Redirect to="/" /> : <Signup />}
+                </Route>
+                <Route exact path="/signin">
+                  {props.authenticated ? <Redirect to="/" /> : <Signin />}
+                </Route>
+                <Route exact path="/forgetpassword">
+                  {props.authenticated ? (
+                    <Redirect to="/" />
+                  ) : (
+                    <ForgetPassword />
+                  )}
+                </Route>
                 <Route exact path="/" component={Home} />
               </div>
               <Route
@@ -120,4 +151,10 @@ function App() {
   );
 }
 
-export default App;
+const mapStateToProps = ({ auth }) => {
+  return {
+    authenticated: auth.authenticated,
+  };
+};
+
+export default connect(mapStateToProps)(App);
