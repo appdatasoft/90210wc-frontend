@@ -1,8 +1,8 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ApolloProvider } from "@apollo/client";
 import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
-import LoadingBar from "react-top-loading-bar";
+import ReduxLoadingBar, { showLoading, hideLoading } from "react-redux-loading";
 import NavC from "./app/components/Nav";
 import Home from "./app/screens/Home";
 import Ivdrip from "./app/screens/IVDrip";
@@ -30,7 +30,6 @@ Amplify.configure(aws_exports);
 
 function App(props) {
   const [showLoader, setShowloader] = useState(true);
-  const ref = useRef(null);
 
   const [menuData, setMenuData] = useState({
     ivdrips: [],
@@ -40,7 +39,7 @@ function App(props) {
   });
 
   const getMenu = () => {
-    ref.current.continuousStart();
+    props.dispatch(showLoading());
 
     var data = JSON.parse(localStorage.getItem("90210wc-data"));
     if (data) {
@@ -58,12 +57,12 @@ function App(props) {
           teams: data.getTeams,
           services: data.getServices,
         });
-        ref.current.complete();
         setShowloader(false);
+        props.dispatch(hideLoading());
       })
       .catch((err) => {
         setShowloader(false);
-        // ref.current.complete();
+        props.dispatch(hideLoading());
       });
   };
 
@@ -73,10 +72,13 @@ function App(props) {
 
   return (
     <ApolloProvider client={client}>
+      <ReduxLoadingBar
+        style={{ color: "red", zIndex: 9989, position: "fixed", top: 0 }}
+      />
       <Router>
         <div>
           {showLoader ? (
-            <LoadingBar color="#f11946" ref={ref} />
+            ""
           ) : (
             <>
               <NavC data={menuData} />
@@ -108,12 +110,15 @@ function App(props) {
                   render={(props) => <Team data={menuData.teams} {...props} />}
                 />
                 <Route exact path="/email" component={Email} />
-                {/* auth */}
                 <Route exact path="/signup">
                   {props.authenticated ? <Redirect to="/" /> : <Signup />}
                 </Route>
                 <Route exact path="/signin">
-                  {props.authenticated ? <Redirect to="/" /> : <Signin />}
+                  {props.authenticated ? (
+                    <Redirect to={props.redirect} />
+                  ) : (
+                    <Signin />
+                  )}
                 </Route>
                 <Route exact path="/forgetpassword">
                   {props.authenticated ? (
@@ -151,9 +156,10 @@ function App(props) {
   );
 }
 
-const mapStateToProps = ({ auth }) => {
+const mapStateToProps = ({ auth, redirect }) => {
   return {
     authenticated: auth.authenticated,
+    redirect: redirect,
   };
 };
 

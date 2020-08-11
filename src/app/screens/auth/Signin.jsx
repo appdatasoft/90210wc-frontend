@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import { Button, Form, FormGroup, Label, Input } from "reactstrap";
-import { Link, Redirect } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Auth } from "aws-amplify";
 import { connect } from "react-redux";
+import { showLoading, hideLoading } from "react-redux-loading";
 import { setAuthUser } from "../../redux/actions/auth";
 
 class Signin extends Component {
@@ -14,7 +15,6 @@ class Signin extends Component {
       disabled: false,
       verify: false,
       code: "",
-      auth: false,
     };
   }
 
@@ -24,9 +24,11 @@ class Signin extends Component {
       this.verifyAccount();
     } else {
       const { email, password } = this.state;
+      this.props.dispatch(showLoading());
       this.setState({ ...this.state, disabled: true });
       Auth.signIn(email, password)
         .then((res) => {
+          this.props.dispatch(hideLoading());
           const data = {
             attributes: res.attributes,
             signInUserSession: res.signInUserSession,
@@ -36,11 +38,10 @@ class Signin extends Component {
 
           localStorage.setItem("90210wc-data", JSON.stringify(data));
 
-          this.setState({ ...this.state, disabled: false, auth: true });
-          // this.props.history.push("/");
+          this.setState({ ...this.state, disabled: false });
         })
         .catch((err) => {
-          // console.log(err);
+          this.props.dispatch(hideLoading());
           if (err.code === "UserNotConfirmedException") {
             this.sendVerificationCode(email);
           } else {
@@ -93,11 +94,8 @@ class Signin extends Component {
   };
 
   render() {
-    const { email, password, disabled, verify, code, auth } = this.state;
-    if(auth){
-      return <Redirect to="/"/>
-    }
-    else if (verify) {
+    const { email, password, disabled, verify, code } = this.state;
+    if (verify) {
       return (
         <div className="mt-4">
           <h1 className="text-center">Account Verification</h1>

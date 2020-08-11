@@ -1,40 +1,91 @@
 import React, { useState } from "react";
+import { connect } from "react-redux";
+import { showLoading, hideLoading } from "react-redux-loading";
 import { useMutation, gql } from "@apollo/client";
 import { Button, Form, FormGroup, Input } from "reactstrap";
+import { Link } from "react-router-dom";
+import { setRedirectPath } from "../redux/actions/redirect";
 
 const SEND_EMAIL = gql`
-  mutation SendEmail($email: String!, $subject: String!, $message: String!) {
-    sendEmail(input: { email: $email, subject: $subject, message: $message }) {
+  mutation SendEmail(
+    $userId: String!
+    $email: String!
+    $subject: String!
+    $message: String!
+  ) {
+    sendEmail(
+      input: {
+        userId: $userId
+        email: $email
+        subject: $subject
+        message: $message
+      }
+    ) {
       email
     }
   }
 `;
 
-const Email = () => {
+const Email = (props) => {
   const [sendEmail] = useMutation(SEND_EMAIL);
   const [payload, setPayload] = useState({
     email: "",
     subject: "",
     message: "",
+    disabled: false,
   });
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    props.dispatch(showLoading());
+    setPayload({
+      ...payload,
+      disabled: true,
+    });
     sendEmail({
       variables: {
+        userId: props.userId,
         email: payload.email,
         subject: payload.subject,
         message: payload.message,
       },
-    }).then(() => {
-      alert(`Email Succesfully send to ${payload.email}`);
-      setPayload({
-        email: "",
-        subject: "",
-        message: "",
+    })
+      .then(() => {
+        props.dispatch(hideLoading());
+        alert(`Email Succesfully send to ${payload.email}`);
+        setPayload({
+          email: "",
+          subject: "",
+          message: "",
+          disabled: false,
+        });
+      })
+      .catch((err) => {
+        props.dispatch(hideLoading());
+        alert(`Something went wrong. Please try again!`);
+        setPayload({
+          ...payload,
+          disabled: false,
+        });
       });
-    });
   };
+
+  const handleRedirect = () => {
+    props.dispatch(setRedirectPath("/email"));
+  };
+
+  if (!props.authenticated) {
+    return (
+      <div className="mt-3">
+        <h2 className="text-center">Please Signin to access this page!</h2>
+        <div className="d-flex justify-content-center">
+          <Link onClick={handleRedirect} to="/signin">
+            <Button color="primary">SignIn</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mt-5 px-5">
@@ -76,7 +127,13 @@ const Email = () => {
             required
           />
         </FormGroup>
-        <Button type="submit" color="primary" size="lg" block>
+        <Button
+          disabled={payload.disabled}
+          type="submit"
+          color="primary"
+          size="lg"
+          block
+        >
           Send Email
         </Button>
       </Form>
@@ -84,4 +141,11 @@ const Email = () => {
   );
 };
 
-export default Email;
+const mapStateToProps = ({ auth }) => {
+  return {
+    authenticated: auth.authenticated,
+    userId: auth.authenticated ? auth.data.attributes.sub : null,
+  };
+};
+
+export default connect(mapStateToProps)(Email);

@@ -18,6 +18,7 @@ import {
   DropdownItem,
 } from "reactstrap";
 import { unsetAuthUser } from "../redux/actions/auth";
+import { setRedirectPath } from "../redux/actions/redirect";
 
 const NavC = (props) => {
   const { ivdrips, therapies, teams, services } = props.data;
@@ -29,6 +30,9 @@ const NavC = (props) => {
       localStorage.removeItem("90210wc-data");
       props.dispatch(unsetAuthUser());
     });
+  };
+  const handleRedirect = () => {
+    props.dispatch(setRedirectPath("/"));
   };
 
   return (
@@ -112,7 +116,7 @@ const NavC = (props) => {
                 Logout
               </Button>
             ) : (
-              <Link to="/signup">
+              <Link onClick={handleRedirect} to="/signin">
                 <Button color="light" outline>
                   SignUp/SignIn
                 </Button>
