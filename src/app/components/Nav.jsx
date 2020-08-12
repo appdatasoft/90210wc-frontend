@@ -109,6 +109,22 @@ const NavC = (props) => {
                   ))}
               </DropdownMenu>
             </UncontrolledDropdown>
+            <UncontrolledDropdown nav inNavbar>
+              <DropdownToggle nav caret>
+                Other
+              </DropdownToggle>
+              <DropdownMenu>
+                <DropdownItem tag={Link} to="/email">
+                  Email
+                </DropdownItem>
+                <DropdownItem tag={Link} to="/data/yelp">
+                  Yelp Scrapper
+                </DropdownItem>
+                <DropdownItem tag={Link} to="/data/linkedin">
+                  LinkedIn Scrapper
+                </DropdownItem>
+              </DropdownMenu>
+            </UncontrolledDropdown>
           </Nav>
           <NavbarText className="py-0">
             {props.auth.authenticated ? (
@@ -129,7 +145,6 @@ const NavC = (props) => {
   );
 };
 
-// export default NavC;
 const mapStateToProps = ({ auth }) => {
   return {
     auth,

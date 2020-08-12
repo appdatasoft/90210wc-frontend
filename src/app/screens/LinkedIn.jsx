@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import { Button, Form, FormGroup, Input, Alert } from "reactstrap";
 import axios from "axios";
+import { connect } from "react-redux";
 
-const LinkedIn = () => {
+import UnAuthorised from "../components/UnAuthorised";
+
+const LinkedIn = ({ authenticated }) => {
   const [data, setData] = useState();
 
   const [payload, setPayload] = useState({
@@ -28,6 +31,10 @@ const LinkedIn = () => {
         setData(JSON.stringify(err));
       });
   };
+
+  if (!authenticated) {
+    return <UnAuthorised redirectPath="/data/linkedin" />;
+  }
 
   return (
     <div className="mt-3 px-5">
@@ -72,4 +79,11 @@ const LinkedIn = () => {
   );
 };
 
-export default LinkedIn;
+const mapStateToProps = ({ auth }) => {
+  return {
+    authenticated: auth.authenticated,
+    userId: auth.authenticated ? auth.data.attributes.sub : null,
+  };
+};
+
+export default connect(mapStateToProps)(LinkedIn);

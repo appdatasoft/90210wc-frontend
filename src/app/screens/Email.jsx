@@ -3,8 +3,8 @@ import { connect } from "react-redux";
 import { showLoading, hideLoading } from "react-redux-loading";
 import { useMutation, gql } from "@apollo/client";
 import { Button, Form, FormGroup, Input } from "reactstrap";
-import { Link } from "react-router-dom";
-import { setRedirectPath } from "../redux/actions/redirect";
+
+import UnAuthorised from "../components/UnAuthorised";
 
 const SEND_EMAIL = gql`
   mutation SendEmail(
@@ -70,21 +70,8 @@ const Email = (props) => {
       });
   };
 
-  const handleRedirect = () => {
-    props.dispatch(setRedirectPath("/email"));
-  };
-
   if (!props.authenticated) {
-    return (
-      <div className="mt-3">
-        <h2 className="text-center">Please Signin to access this page!</h2>
-        <div className="d-flex justify-content-center">
-          <Link onClick={handleRedirect} to="/signin">
-            <Button color="primary">SignIn</Button>
-          </Link>
-        </div>
-      </div>
-    );
+    return <UnAuthorised redirectPath="/email" />;
   }
 
   return (
