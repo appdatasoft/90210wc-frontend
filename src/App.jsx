@@ -1,7 +1,8 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ApolloProvider } from "@apollo/client";
-import { BrowserRouter as Router, Route } from "react-router-dom";
-import LoadingBar from "react-top-loading-bar";
+import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
+import { connect } from "react-redux";
+import ReduxLoadingBar, { showLoading, hideLoading } from "react-redux-loading";
 import NavC from "./app/components/Nav";
 import Home from "./app/screens/Home";
 import Ivdrip from "./app/screens/IVDrip";
@@ -15,11 +16,21 @@ import VerticalNav from "./app/components/VerticalNav";
 import Appointment from "./app/screens/Appointment";
 import { client } from "./app/graphql/";
 import { getMenuQuery } from "./app/graphql/query";
+import { setAuthUser } from "./app/redux/actions/auth";
+
+import Amplify from "aws-amplify";
+import aws_exports from "./aws-exports";
+import Signup from "./app/screens/auth/Signup";
+import Signin from "./app/screens/auth/Signin";
 
 import "./App.css";
+import ForgetPassword from "./app/screens/auth/ForgetPassword";
 
-function App() {
+Amplify.configure(aws_exports);
+
+function App(props) {
   const [showLoader, setShowloader] = useState(true);
+
   const [menuData, setMenuData] = useState({
     ivdrips: [],
     therapies: [],
@@ -28,7 +39,13 @@ function App() {
   });
 
   const getMenu = () => {
-    ref.current.continuousStart();
+    props.dispatch(showLoading());
+
+    var data = JSON.parse(localStorage.getItem("90210wc-data"));
+    if (data) {
+      props.dispatch(setAuthUser(data));
+    }
+
     client
       .query({
         query: getMenuQuery,
@@ -40,15 +57,14 @@ function App() {
           teams: data.getTeams,
           services: data.getServices,
         });
-        ref.current.complete();
         setShowloader(false);
+        props.dispatch(hideLoading());
       })
       .catch((err) => {
         setShowloader(false);
-        ref.current.complete();
+        props.dispatch(hideLoading());
       });
   };
-  const ref = useRef(null);
 
   useEffect(() => {
     getMenu();
@@ -56,10 +72,13 @@ function App() {
 
   return (
     <ApolloProvider client={client}>
+      <ReduxLoadingBar
+        style={{ color: "red", zIndex: 9989, position: "fixed", top: 0 }}
+      />
       <Router>
         <div>
           {showLoader ? (
-            <LoadingBar color="#f11946" ref={ref} />
+            ""
           ) : (
             <>
               <NavC data={menuData} />
@@ -91,6 +110,23 @@ function App() {
                   render={(props) => <Team data={menuData.teams} {...props} />}
                 />
                 <Route exact path="/email" component={Email} />
+                <Route exact path="/signup">
+                  {props.authenticated ? <Redirect to="/" /> : <Signup />}
+                </Route>
+                <Route exact path="/signin">
+                  {props.authenticated ? (
+                    <Redirect to={props.redirect} />
+                  ) : (
+                    <Signin />
+                  )}
+                </Route>
+                <Route exact path="/forgetpassword">
+                  {props.authenticated ? (
+                    <Redirect to="/" />
+                  ) : (
+                    <ForgetPassword />
+                  )}
+                </Route>
                 <Route exact path="/" component={Home} />
               </div>
               <Route
@@ -120,4 +156,11 @@ function App() {
   );
 }
 
-export default App;
+const mapStateToProps = ({ auth, redirect }) => {
+  return {
+    authenticated: auth.authenticated,
+    redirect: redirect,
+  };
+};
+
+export default connect(mapStateToProps)(App);
